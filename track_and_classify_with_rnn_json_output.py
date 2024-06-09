@@ -177,9 +177,11 @@ class VideoClipMaker:
         self.frame_buffer.append(frame)
         self.feature_buffer.append(feature)
         
-    def translateLastFrameToBeginTime(self, frame):
-        total_second = (frame - self.VIDEO_FRAMES) / self.fps
-        minutes, seconds = divmod(total_second, 60)
+    def translateLastFrameToBeginTime(self, frame, to_seconds=False):
+        total_seconds = (frame - self.VIDEO_FRAMES) / self.fps
+        if to_seconds:
+            return total_seconds
+        minutes, seconds = divmod(total_seconds, 60)
         return f"{int(minutes):02}-{int(seconds):02}"
     
     def createVideoClip(self, frame_id, shot_type):
@@ -214,20 +216,8 @@ class VideoClipMaker:
         print(f"saving csv to {outpath}")
 
         # Generate JSON data
-        start_time = self.translateLastFrameToBeginTime(frame_id - self.VIDEO_FRAMES)
-        end_time = self.translateLastFrameToBeginTime(frame_id)
-        video_name = os.path.basename(self.video_file_path)  # Use the original video file name
-
-        start_seconds = 0
-        end_seconds = 2
-
-        try:
-            start_seconds = self.convertTimeToSeconds(start_time)
-            end_seconds = self.convertTimeToSeconds(end_time)
-        except (ValueError, TypeError) as e:
-            print(f"Error converting time string: {start_time} or {end_time}")
-            print(f"Error message: {str(e)}")
-            print("Setting start time to 0 seconds and end time to 2 seconds.")
+        start_seconds = self.translateLastFrameToBeginTime(frame_id, to_seconds=True)
+        end_seconds = self.translateLastFrameToBeginTime(frame_id, to_seconds=True) + 2
 
         trick_data = {
             "start": start_seconds,
@@ -374,11 +364,11 @@ def process_file(m1, video_file_path, dest_path):
     
 
 if __name__ == "__main__":
-    source_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test"
+    source_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test_temp"
     model_file = "C:/Users/ashis/OneDrive/Desktop/rnn/tennis_rnn_rafa.keras"
     
     m1 = keras.models.load_model(model_file)
-    scan_through_folder(source_folder, "C:/Users/ashis/OneDrive/Desktop/rnn/test", m1)
+    scan_through_folder(source_folder, "C:/Users/ashis/OneDrive/Desktop/rnn/test_temp", m1)
 
 
  
