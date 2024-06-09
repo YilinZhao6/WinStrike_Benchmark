@@ -226,6 +226,18 @@ class VideoAnalysisApp(QWidget):
             else:
                 html_content += f"""
                 <h2>Video: {result['video_name']}</h2>
+                <p>Marker Legend:</p>
+                <ul>
+                    <li><span style="color: blue;">✓</span> - Matched with the right type</li>
+                    <li><span style="color: red;">✗</span> - Matched with the wrong type</li>
+                    <li><span style="color: blue;">★</span> - Exists in one timeline but not the other</li>
+                </ul>
+                <p>Action Color Legend:</p>
+                <ul>
+                    <li><span style="color: #4B9CD3;">Forehand Strike</span></li>
+                    <li><span style="color: orange;">Backhand Strike</span></li>
+                    <li><span style="color: green;">Serve</span></li>
+                </ul>
                 <div style="display: flex;">
                     <div style="width: 50%;">
                         <h3>Ground Truth Timeline</h3>
@@ -259,7 +271,7 @@ class VideoAnalysisApp(QWidget):
 
     def generate_timeline_html(self, tricks, matched_tricks, is_ground_truth):
         colors = {
-            'Forehand Strike': 'blue',
+            'Forehand Strike': '#4B9CD3',  # Columbia University's blue
             'Backhand Strike': 'orange',
             'Serve': 'green'
         }
@@ -279,11 +291,14 @@ class VideoAnalysisApp(QWidget):
                     else:
                         marker = '<span style="color: red;">✗</span>'
                 else:
-                    marker = ''
+                    if trick['labels'] == next((gt_trick for gt_trick, rnn_trick in matched_tricks if rnn_trick == trick), None)['labels']:
+                        marker = '<span style="color: white;">✓</span>'
+                    else:
+                        marker = ''
             else:
                 marker = '<span style="color: yellow;">★</span>'
-
-            html_content += f'<div style="background-color: {color}; margin-bottom: 5px;">{trick["labels"][0]} ({trick["start"]:.2f}s - {trick["end"]:.2f}s) {marker}</div>'
+                
+            html_content += f'<div style="background-color: {color}; margin-bottom: 5px; height: 30px; line-height: 30px;">{trick["labels"][0]} ({trick["start"]:.2f}s - {trick["end"]:.2f}s) {marker}</div>'
 
         return html_content
     
