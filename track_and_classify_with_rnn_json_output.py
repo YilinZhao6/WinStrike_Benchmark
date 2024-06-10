@@ -364,11 +364,11 @@ def process_file(m1, video_file_path, dest_path):
     
 
 if __name__ == "__main__":
-    source_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test_temp"
+    source_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test"
     model_file = "C:/Users/ashis/OneDrive/Desktop/rnn/tennis_rnn_rafa.keras"
     
     m1 = keras.models.load_model(model_file)
-    scan_through_folder(source_folder, "C:/Users/ashis/OneDrive/Desktop/rnn/test_temp", m1)
+    scan_through_folder(source_folder, "C:/Users/ashis/OneDrive/Desktop/rnn/test", m1)
 
 
  

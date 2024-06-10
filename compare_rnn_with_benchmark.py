@@ -252,12 +252,21 @@ class VideoAnalysisApp(QWidget):
 
                 total_actions = len(result['gt_tricks']) + len(result['rnn_tricks'])
                 if total_actions > 0:
-                    html_content += f"""
-                    <p>Matched with Right Type: {result['matched_right_type'] * 2} ({result['matched_right_type'] * 2 / total_actions * 100:.2f}%)</p>
-                    <p>Matched with Wrong Type: {result['matched_wrong_type'] * 2} ({result['matched_wrong_type'] * 2 / total_actions * 100:.2f}%)</p>
-                    <p>Mismatch - Exists in Ground Truth, but not in RNN: {result['mismatch_gt']} ({result['mismatch_gt'] / len(result['gt_tricks']) * 100:.2f}%)</p>
-                    <p>Mismatch - Exists in RNN, but not in Ground Truth: {result['mismatch_rnn']} ({result['mismatch_rnn'] / len(result['rnn_tricks']) * 100:.2f}%)</p>
-                    """
+                    try:
+                        html_content += f"""
+                        <p>Matched with Right Type: {result['matched_right_type'] * 2} ({result['matched_right_type'] * 2 / total_actions * 100:.2f}%)</p>
+                        <p>Matched with Wrong Type: {result['matched_wrong_type'] * 2} ({result['matched_wrong_type'] * 2 / total_actions * 100:.2f}%)</p>
+                        <p>Mismatch - Exists in Ground Truth, but not in RNN: {result['mismatch_gt']} ({result['mismatch_gt'] / len(result['gt_tricks']) * 100:.2f}%)</p>
+                        <p>Mismatch - Exists in RNN, but not in Ground Truth: {result['mismatch_rnn']} ({result['mismatch_rnn'] / len(result['rnn_tricks']) * 100:.2f}%)</p>
+                        """
+                    except ZeroDivisionError:
+                        print(f"Error: Division by zero encountered for video '{result['video_name']}'. Skipping this video.")
+                        html_content += f"""
+                        <p>Matched with Right Type: {result['matched_right_type'] * 2} ({result['matched_right_type'] * 2 / total_actions * 100:.2f}%)</p>
+                        <p>Matched with Wrong Type: {result['matched_wrong_type'] * 2} ({result['matched_wrong_type'] * 2 / total_actions * 100:.2f}%)</p>
+                        <p>Mismatch - Exists in Ground Truth, but not in RNN: {result['mismatch_gt']} ({'N/A' if len(result['gt_tricks']) == 0 else f"{result['mismatch_gt'] / len(result['gt_tricks']) * 100:.2f}%"})</p>
+                        <p>Mismatch - Exists in RNN, but not in Ground Truth: {result['mismatch_rnn']} ({'N/A' if len(result['rnn_tricks']) == 0 else f"{result['mismatch_rnn'] / len(result['rnn_tricks']) * 100:.2f}%"})</p>
+                        """
                 else:
                     html_content += "<p>No actions found in this video.</p>"
 
