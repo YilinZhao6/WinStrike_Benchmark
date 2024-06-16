@@ -244,7 +244,7 @@ class VideoClipMaker:
             minutes, seconds = map(int, time_string.split('-'))
             return minutes * 60 + seconds
 
-def scan_through_folder(src, dest, m1):
+def scan_through_folder(src, dest, m1, left_handed):
     # Ensure source is a valid directory
     if not os.path.exists(src):
         print("Source directory does not exist.")
@@ -261,7 +261,7 @@ def scan_through_folder(src, dest, m1):
             dest_final_folder = os.path.join(dest, os.path.splitext(file)[0])
             if not os.path.exists(dest_final_folder):
                 os.makedirs(dest_final_folder)
-            video_clip_maker = process_file(m1, source_file, dest_final_folder)
+            video_clip_maker = process_file(m1, source_file, dest_final_folder, left_handed)
             
             # Save the combined JSON file for the video
             json_file_name = f'{dest_final_folder}/{os.path.splitext(file)[0]}_timestamp.json'
@@ -271,7 +271,7 @@ def scan_through_folder(src, dest, m1):
 
             
 
-def process_file(m1, video_file_path, dest_path):
+def process_file(m1, video_file_path, dest_path, left_handed):
     shot_counter = ShotCounter()
     
     cap = cv2.VideoCapture(video_file_path)
@@ -328,6 +328,9 @@ def process_file(m1, video_file_path, dest_path):
 
         features = human_pose_extractor.keypoints_with_scores.reshape(17, 3)
 
+        if left_handed:
+            features[:, 1] = 1 - features[:, 1]
+
         features = features[features[:, 2] > 0][:, 0:2].reshape(1, 13 * 2)
 
         video_clip_maker.addFrameAndFeature(frame.copy(), features)
@@ -361,14 +364,16 @@ def process_file(m1, video_file_path, dest_path):
     
     return video_clip_maker  # Return the video_clip_maker instance
 
-    
+#Deal with the left-handed situation
 
 if __name__ == "__main__":
-    source_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test_right_handed"
+    source_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test_left_handed"
     model_file = "C:/Users/ashis/OneDrive/Desktop/rnn/tennis_rnn_rafa.keras"
-    
+    dest_folder = "C:/Users/ashis/OneDrive/Desktop/rnn/test_left_handed_output"
+    left_handed = True  # Set to True if the player is left-handed, False otherwise
+
     m1 = keras.models.load_model(model_file)
-    scan_through_folder(source_folder, "C:/Users/ashis/OneDrive/Desktop/rnn/test_right_handed_output", m1)
+    scan_through_folder(source_folder, dest_folder, m1, left_handed)
 
 
  
