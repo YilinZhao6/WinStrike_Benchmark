@@ -2,6 +2,8 @@
 The application is designed to compare the results of the Recurrent Neural Network (RNN) model with ground truth data for analyzing tennis videos.
 
 Here is the Google Drive Link for the source video: https://drive.google.com/file/d/1orQI5zfl2DgwhN-qqA3NzfauBj2BfLEs/view?usp=sharing (Updated Jun 16th, 2024)
+
+
 The *Video Analysis App* functions as the following steps:
 
 1. **Read RNN JSON files and import Ground Truth JSON files:** 
